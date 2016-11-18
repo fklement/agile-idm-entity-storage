@@ -1,0 +1,37 @@
+{
+  "name": "agile-idm-entity-storage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "http-errors": "^1.5.1",
+    "level": "^1.5.0",
+    "level-transactions": "^2.1.4"
+  },
+  "devDependencies": {
+    "assert": "1.4.1",
+    "clone": "1.0.2",
+    "deep-diff": "0.3.3",
+    "grunt": "^1.0.1",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-jsbeautifier": "^0.2.13",
+    "rmdir": "1.2.0",
+    "mocha": "2.4.5"
+  },
+  "scripts": {
+    "test": "mocha tests/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agile-iot/agile-idm-entity-storage.git"
+  },
+  "author": "nopbyte",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/agile-iot/agile-idm-entity-storage/issues"
+  },
+  "homepage": "https://github.com/agile-iot/agile-idm-entity-storage#readme"
+}
