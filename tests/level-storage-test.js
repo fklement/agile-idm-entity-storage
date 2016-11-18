@@ -231,7 +231,10 @@ describe('LevelStorage', function () {
     it('should resolve with and empty array when attempting to find entity by type and id that is not there', function (done) {
 
       var storage = createLevelStorage();
-      storage.listEntitiesByAttributeValueAndType([{attribute_type:"unexistent-stuff",attribute_value :"user"}])
+      storage.listEntitiesByAttributeValueAndType([{
+          attribute_type: "unexistent-stuff",
+          attribute_value: "user"
+        }])
         .then(function (result) {
           if (result instanceof Array && result.length == 0)
             storage.cleanDb(done);
@@ -259,7 +262,10 @@ describe('LevelStorage', function () {
       p.then(function (d) {
         return storage.createEntityPromise("otherentity", entity_type, owner, datasecond);
       }).then(function (created) {
-        storage.listEntitiesByAttributeValueAndType([{attribute_type:"name",attribute_value :"string"}])
+        storage.listEntitiesByAttributeValueAndType([{
+            attribute_type: "name",
+            attribute_value: "string"
+          }])
           .then(function (result) {
             if (result.length == 1) {
               result = result[0];
@@ -270,6 +276,84 @@ describe('LevelStorage', function () {
                 if (deepdif.diff(data, result) == undefined)
                   storage.cleanDb(done);
               }
+            }
+
+          });
+      }, function rej(r) {
+        console.error('a' + r);
+        throw r;
+      })
+
+    });
+
+    it('should resolve with entity when it is looked using attribute value and entity type, if it has been previously stored', function (done) {
+      var storage = createLevelStorage();
+      var owner = "1";
+      var entity_id = "2";
+      var entity_type = "user";
+      var data = {
+        "name": "string",
+        "token": "123"
+      };
+      var datasecond = {
+        "name": "mysecond attribute",
+        "token": "123"
+      };
+
+      var p = storage.createEntityPromise(entity_id, entity_type, owner, data);
+      p.then(function (d) {
+        return storage.createEntityPromise("otherentity", "some_other_type", owner, datasecond);
+      }).then(function (created) {
+        storage.listEntitiesByAttributeValueAndType([{
+            attribute_type: "name",
+            attribute_value: "string"
+          }],entity_type)
+          .then(function (result) {
+            if (result.length == 1) {
+              result = result[0];
+              if (result.id == entity_id && result.type == entity_type && result.owner == owner) {
+                delete result.id; //id is included so remove it to check
+                delete result.type; //entity type is included so remove it to check
+                delete result.owner; //owner is included so remove it to check
+                if (deepdif.diff(data, result) == undefined)
+                  storage.cleanDb(done);
+              }
+            }
+
+          });
+      }, function rej(r) {
+        console.error('a' + r);
+        throw r;
+      })
+
+    });
+
+    it('should resolve with empty array when  looking for an entity using the right attribute values but with the wrong entity type, if it has been previously stored', function (done) {
+      var storage = createLevelStorage();
+      var owner = "1";
+      var entity_id = "2";
+      var entity_type = "user";
+      var data = {
+        "name": "string",
+        "token": "123"
+      };
+      var datasecond = {
+        "name": "mysecond attribute",
+        "token": "123"
+      };
+
+      var p = storage.createEntityPromise(entity_id, entity_type, owner, data);
+      p.then(function (d) {
+        return storage.createEntityPromise("otherentity", "some_other_type", owner, datasecond);
+      }).then(function (created) {
+        storage.listEntitiesByAttributeValueAndType([{
+            attribute_type: "name",
+            attribute_value: "string"
+          }],"some_other_type")
+          .then(function (result) {
+            if (result.length === 0) {
+                  storage.cleanDb(done);
+              
             }
 
           });
@@ -297,7 +381,10 @@ describe('LevelStorage', function () {
       p.then(function (d) {
         return storage.createEntityPromise("otherentity", entity_type, owner, datasecond);
       }).then(function (created) {
-        storage.listEntitiesByAttributeValueAndType([{attribute_type:"name",attribute_value :"string"}])
+        storage.listEntitiesByAttributeValueAndType([{
+            attribute_type: "name",
+            attribute_value: "string"
+          }])
           .then(function (array) {
             if (array.length == 2 && deepdif.diff(array[1], array[2])) {
               var count = 0;
@@ -312,7 +399,7 @@ describe('LevelStorage', function () {
                 }
               }
               if (count == 2)
-                      storage.cleanDb(done);
+                storage.cleanDb(done);
             }
           });
       }, function rej(r) {
