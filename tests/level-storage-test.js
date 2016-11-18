@@ -231,7 +231,7 @@ describe('LevelStorage', function () {
     it('should resolve with and empty array when attempting to find entity by type and id that is not there', function (done) {
 
       var storage = createLevelStorage();
-      storage.listEntitiesByAttributeValueAndType("unexistent-stuff", "user")
+      storage.listEntitiesByAttributeValueAndType([{attribute_type:"unexistent-stuff",attribute_value :"user"}])
         .then(function (result) {
           if (result instanceof Array && result.length == 0)
             storage.cleanDb(done);
@@ -259,7 +259,7 @@ describe('LevelStorage', function () {
       p.then(function (d) {
         return storage.createEntityPromise("otherentity", entity_type, owner, datasecond);
       }).then(function (created) {
-        storage.listEntitiesByAttributeValueAndType("name", "string")
+        storage.listEntitiesByAttributeValueAndType([{attribute_type:"name",attribute_value :"string"}])
           .then(function (result) {
             if (result.length == 1) {
               result = result[0];
@@ -297,7 +297,7 @@ describe('LevelStorage', function () {
       p.then(function (d) {
         return storage.createEntityPromise("otherentity", entity_type, owner, datasecond);
       }).then(function (created) {
-        storage.listEntitiesByAttributeValueAndType("name", "string")
+        storage.listEntitiesByAttributeValueAndType([{attribute_type:"name",attribute_value :"string"}])
           .then(function (array) {
             if (array.length == 2 && deepdif.diff(array[1], array[2])) {
               var count = 0;
@@ -312,7 +312,7 @@ describe('LevelStorage', function () {
                 }
               }
               if (count == 2)
-                done();
+                      storage.cleanDb(done);
             }
           });
       }, function rej(r) {
