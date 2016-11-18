@@ -307,7 +307,7 @@ describe('LevelStorage', function () {
         storage.listEntitiesByAttributeValueAndType([{
             attribute_type: "name",
             attribute_value: "string"
-          }],entity_type)
+          }], entity_type)
           .then(function (result) {
             if (result.length == 1) {
               result = result[0];
@@ -349,11 +349,11 @@ describe('LevelStorage', function () {
         storage.listEntitiesByAttributeValueAndType([{
             attribute_type: "name",
             attribute_value: "string"
-          }],"some_other_type")
+          }], "some_other_type")
           .then(function (result) {
             if (result.length === 0) {
-                  storage.cleanDb(done);
-              
+              storage.cleanDb(done);
+
             }
 
           });
