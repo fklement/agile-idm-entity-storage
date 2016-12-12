@@ -307,7 +307,7 @@ describe('LevelStorage', function () {
         storage.listEntitiesByAttributeValueAndType([{
             attribute_type: "name",
             attribute_value: "string"
-          },{
+          }, {
             attribute_type: "token",
             attribute_value: "123"
           }])
@@ -352,14 +352,14 @@ describe('LevelStorage', function () {
         storage.listEntitiesByAttributeValueAndType([{
             attribute_type: "name",
             attribute_value: "string"
-          },{
+          }, {
             attribute_type: "token",
             attribute_value: "non-equal-to-123"
           }])
           .then(function (result) {
             if (result.length === 0)
-                  storage.cleanDb(done);
-            
+              storage.cleanDb(done);
+
           });
       }, function rej(r) {
         console.error('a' + r);
