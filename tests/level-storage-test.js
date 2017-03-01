@@ -630,6 +630,52 @@ describe('LevelStorage', function () {
         });
     });
 
+    it('should remove entity from group as well as the group reference in the entity after an entity has been removed from a group', function (done) {
+      var storage = createLevelStorage();
+      var owner = "1";
+      var entity_id = "2";
+      var entity_type = "user";
+      var data = {
+        "name": "string",
+        "token": "123"
+      };
+      var group;
+      var group_name = "mygroup";
+      storage.createGroupPromise(group_name, owner)
+        .then(function (g) {
+          group = g;
+          return storage.createEntityPromise(entity_id, entity_type, owner, data)
+        })
+        .then(function (entity) {
+          return storage.addEntityToGroupPromise(group.group_name, group.owner, entity_id, entity_type);
+        }).then(function (result) {
+          return storage.removeEntityFromGroupPromise(group_name, owner, entity_id, entity_type);
+
+        }).then(function (result) {
+          return Promise.all([storage.readEntityPromise(entity_id, entity_type), storage.readGroupPromise(group_name, owner)]);
+
+        }).then(function (res) {
+          var entity = res[0];
+          var group = res[1];
+          if (entity.groups && group.entities) {
+            var r = entity.groups.filter(function (v) {
+              return (v.group_name == group_name && v.owner === owner);
+            });
+            var r1 = group.entities.filter(function (v) {
+              return (v.id == entity_id && v.type === entity_type);
+            });
+            if (r.length === 0 && r1.length === 0) {
+              storage.cleanDb(done);
+            } else {
+              reject(new Error("group not removed! " + JSON.stringify(entity)));
+            }
+          }
+        }).catch(function reject(error) {
+          console.log("error in test " + error);
+          throw error;
+        });
+    });
+
     it('should reject with 404 error when attempting to place an exitent entity in a group is not there', function (done) {
       var storage = createLevelStorage();
       var owner = "1";
