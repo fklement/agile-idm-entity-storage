@@ -1000,6 +1000,48 @@ describe('LevelStorage', function () {
 
   });
 
+  describe('#List Groups', function () {
+
+    it('should resolve with an empty array  when there are no groups', function (done) {
+      var storage = createLevelStorage();
+
+      storage.listGroups()
+        .then(function (result) {
+          if (result.length === 0) {
+            storage.cleanDb(done);
+          }
+        }, function reject(error) {
+          throw Error("should not fail but return an empty array");
+
+        });
+    });
+    it('should return all groups', function (done) {
+      var storage = createLevelStorage();
+      var owner = "1";
+      var group1;
+      var group2;
+      var group_name = "mygroup";
+      var group_name2 = "mygroup2";
+      Promise.all([storage.createGroupPromise(group_name, owner), storage.createGroupPromise(group_name2, owner)])
+        .then(function (array) {
+          return storage.listGroups();
+        })
+        .then(function (groups) {
+          if (groups[0].owner === owner && groups[1].owner === owner) {
+            var b = true;
+            groups.forEach(function (v) {
+              b = b && (v.group_name === group_name || v.group_name === group_name2);
+            })
+            if (b)
+              storage.cleanDb(done);
+          }
+
+        }, function reject(error) {
+          throw error;
+        });
+    });
+  });
+
   describe('#List entities  in  a Group', function () {
     //called after each test to delete the database
     afterEach(function () {
