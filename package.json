@@ -1,6 +1,6 @@
 {
   "name": "agile-idm-entity-storage",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -9,7 +9,8 @@
   "dependencies": {
     "http-errors": "^1.5.1",
     "level": "^1.5.0",
-    "level-transactions": "^2.1.4"
+    "level-transactions": "^2.1.4",
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
     "assert": "1.4.1",
