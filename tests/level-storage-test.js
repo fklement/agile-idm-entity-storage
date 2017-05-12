@@ -625,6 +625,50 @@ describe('LevelStorage', function () {
 
   });
 
+  describe('#listEntitiesByEntityType()', function () {
+    //called after each test to delete the database
+    afterEach(function () {
+
+    });
+
+    it('should resolve with data items from a that have a particular type', function (done) {
+      var storage = createLevelStorage();
+      var owner = "1";
+      var entity_id = "2";
+      var entity_type = "user";
+      var data = {
+        "name": "string",
+        "token": "123"
+      };
+      var datasecond = {
+        "name": "string",
+        "token": "123"
+      };
+      var p = storage.createEntityPromise(entity_id, entity_type, owner, data);
+      p.then(function (d) {
+        return storage.createEntityPromise("otherentity", "other_type", owner, datasecond);
+      }).then(function (created) {
+        storage.listEntitiesByEntityType("user")
+          .then(function (array) {
+            if (array.length == 1) {
+              result = array[0];
+              if (result.id == entity_id && result.type === "user" && result.owner == owner) {
+                delete result.id; //id is included so remove it to check
+                delete result.type; //entity type is included so remove it to check
+                delete result.owner; //owner is included so remove it to check
+                if (deepdif.diff(data, result) == undefined || deepdif.diff(datasecond, result) == undefined)
+                  storage.cleanDb(done);
+              }
+            }
+          });
+      }, function rej(r) {
+        console.error('a' + r);
+        throw r;
+      })
+
+    });
+  });
+
   describe('#Create amd Read Group()', function () {
     //called after each test to delete the database
     afterEach(function () {
