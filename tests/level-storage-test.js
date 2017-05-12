@@ -334,6 +334,91 @@ describe('LevelStorage', function () {
 
     });
 
+    it('should resolve with data items from a specific type  that have a particular attribuve value when listEntitiesByAttributeValueAndType is called witho a type specified as second argument', function (done) {
+      var storage = createLevelStorage();
+      var owner = "1";
+      var entity_id = "2";
+      var entity_type = "user";
+      var data = {
+        "name": "string",
+        "token": "123"
+      };
+      var datasecond = {
+        "name": "string",
+        "token": "123"
+      };
+      var p = storage.createEntityPromise(entity_id, entity_type, owner, data);
+      p.then(function (d) {
+        return storage.createEntityPromise("otherentity", "other_type", owner, datasecond);
+      }).then(function (created) {
+        storage.listEntitiesByAttributeValueAndType([{
+            attribute_type: "name",
+            attribute_value: "string"
+          }], "user")
+          .then(function (array) {
+            if (array.length == 1) {
+              result = array[0];
+              if (result.id == entity_id && result.type === "user" && result.owner == owner) {
+                delete result.id; //id is included so remove it to check
+                delete result.type; //entity type is included so remove it to check
+                delete result.owner; //owner is included so remove it to check
+                if (deepdif.diff(data, result) == undefined || deepdif.diff(datasecond, result) == undefined)
+                  storage.cleanDb(done);
+              }
+            }
+          });
+      }, function rej(r) {
+        console.error('a' + r);
+        throw r;
+      })
+
+    });
+
+    it('should resolve with data items from different types that have a particular attribuve value when listEntitiesByAttributeValueAndType is called without a type specified as second argument', function (done) {
+      var storage = createLevelStorage();
+      var owner = "1";
+      var entity_id = "2";
+      var entity_type = "user";
+      var data = {
+        "name": "string",
+        "token": "123"
+      };
+      var datasecond = {
+        "name": "string",
+        "token": "123"
+      };
+      var p = storage.createEntityPromise(entity_id, entity_type, owner, data);
+      p.then(function (d) {
+        return storage.createEntityPromise("otherentity", "other_type", owner, datasecond);
+      }).then(function (created) {
+        storage.listEntitiesByAttributeValueAndType([{
+            attribute_type: "name",
+            attribute_value: "string"
+          }])
+          .then(function (array) {
+            if (array.length == 2 && deepdif.diff(array[1], array[2])) {
+              var count = 0;
+              for (var i in array) {
+                result = array[i];
+                if ((result.id == entity_id || result.id == "otherentity") && result.owner == owner) {
+                  delete result.id; //id is included so remove it to check
+                  delete result.type; //entity type is included so remove it to check
+                  delete result.owner; //owner is included so remove it to check
+                  if (deepdif.diff(data, result) == undefined || deepdif.diff(datasecond, result) == undefined)
+                    count++;
+                }
+              }
+              if (count == 2)
+                storage.cleanDb(done);
+            }
+          });
+      }, function rej(r) {
+        console.error('a' + r);
+        throw r;
+      })
+
+    });
+
     it('should resolve one data when looking for more than one attribute value and type, if it has been previously stored', function (done) {
       var storage = createLevelStorage();
       var owner = "1";
