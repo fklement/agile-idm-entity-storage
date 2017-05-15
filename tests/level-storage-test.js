@@ -768,7 +768,7 @@ describe('LevelStorage', function () {
         });
     });
 
-    it('should remove group references in entities after deleting it', function (done) {
+    it('should remove group references in entities after deleting it from the group', function (done) {
       var storage = createLevelStorage();
       var owner = "1";
       var entity_id = "2";
@@ -801,6 +801,39 @@ describe('LevelStorage', function () {
             } else {
               reject(new Error("group not removed! " + JSON.stringify(entity)));
             }
+          }
+        }).catch(function reject(error) {
+          throw error;
+        });
+    });
+
+    it('should remove group references in entities after deleting the entity altogether', function (done) {
+      var storage = createLevelStorage();
+      var owner = "1";
+      var entity_id = "2";
+      var entity_type = "user";
+      var data = {
+        "name": "string",
+        "token": "123"
+      };
+      var group;
+      var group_name = "mygroup";
+      storage.createGroupPromise(group_name, owner)
+        .then(function (g) {
+          group = g;
+          return storage.createEntityPromise(entity_id, entity_type, owner, data)
+        })
+        .then(function (entity) {
+          return storage.addEntityToGroupPromise(group.group_name, group.owner, entity_id, entity_type);
+        }).then(function (result) {
+          return storage.deleteEntityPromise(entity_id, entity_type);
+        }).then(function (result) {
+          return storage.readGroupPromise(group.group_name, group.owner);
+        }).then(function (g) {
+          if (g.entities) {
+            if (g.entities.length === 0)
+              storage.cleanDb(done);
+
           }
         }).catch(function reject(error) {
           throw error;
